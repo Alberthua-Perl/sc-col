@@ -1,0 +1,11 @@
+[mirror-centos8-AppStream]
+name=Mirror repositories for CentOS 8 - AppStream
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault/8.0.1905/AppStream/x86_64/os/
+enabled=1
+gpgcheck=0
+
+[mirror-centos8-BaseOS]
+name=Mirror repositories for CentOS 8 - BaseOS
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault/8.0.1905/BaseOS/x86_64/os/
+enabled=1
+gpgcheck=0

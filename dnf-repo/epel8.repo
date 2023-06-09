@@ -1,0 +1,5 @@
+[epel8]
+name = epel8 repository
+baseurl = https://mirrors.tuna.tsinghua.edu.cn/epel/8/Everything/x86_64/
+enabled = 1
+gpgcheck = 0

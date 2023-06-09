@@ -1,0 +1,26 @@
+$TTL 1D
+@	IN SOA	servera.lab.example.com. root.lab.example.com. (
+					2021030201	; serial
+					1D	; refresh
+					1H	; retry
+					1W	; expire
+					3H ; minimum
+)
+
+; Master and Slave Name Server Information
+@		IN	NS	servera.lab.example.com.
+		IN	NS	serverb.lab.example.com.
+
+; Reverse lookup for Name Server
+221		IN	PTR		servera.lab.example.com.
+222		IN	PTR		serverb.lab.example.com.
+
+; PTR Record - IP Address to Hostname
+221		IN	PTR		www.lab.example.com.
+221		IN	PTR		cloud.lab.example.com.
+221		IN	PTR		learnpath.lab.example.com.
+221		IN	PTR		bbs.lab.example.com.
+222		IN	PTR		mail.lab.example.com.
+220		IN	PTR		repository.lab.example.com.
+223		IN	PTR		ipa-server.lab.example.com.
+224		IN	PTR		ipa-client.lab.example.com.

@@ -1,0 +1,167 @@
+# begin crush map
+tunable choose_local_tries 0
+tunable choose_local_fallback_tries 0
+tunable choose_total_tries 50
+tunable chooseleaf_descend_once 1
+tunable chooseleaf_vary_r 1
+tunable chooseleaf_stable 1
+tunable straw_calc_version 1
+tunable allowed_bucket_algs 54
+
+# devices
+device 0 osd.0 class hdd
+device 1 osd.1 class hdd
+device 2 osd.2 class ssd
+device 3 osd.3 class hdd
+device 4 osd.4 class ssd
+device 5 osd.5 class hdd
+device 6 osd.6 class hdd
+device 7 osd.7 class hdd
+device 8 osd.8 class ssd
+
+# types
+type 0 osd
+type 1 host
+type 2 chassis
+type 3 rack
+type 4 row
+type 5 pdu
+type 6 pod
+type 7 room
+type 8 datacenter
+type 9 region
+type 10 root
+
+# buckets
+host serverc {
+	id -3		# do not change unnecessarily
+	id -4 class hdd		# do not change unnecessarily
+	id -30 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+}
+host serverd {
+	id -5		# do not change unnecessarily
+	id -6 class hdd		# do not change unnecessarily
+	id -31 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+}
+host servere {
+	id -7		# do not change unnecessarily
+	id -8 class hdd		# do not change unnecessarily
+	id -32 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+}
+root default {
+	id -1		# do not change unnecessarily
+	id -2 class hdd		# do not change unnecessarily
+	id -33 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+	item serverc weight 0.000
+	item serverd weight 0.000
+	item servere weight 0.000
+}
+host hostc {
+	id -13		# do not change unnecessarily
+	id -18 class hdd		# do not change unnecessarily
+	id -23 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+}
+rack rackA1 {
+	id -10		# do not change unnecessarily
+	id -21 class hdd		# do not change unnecessarily
+	id -24 class ssd		# do not change unnecessarily
+	# weight 0.055
+	alg straw2
+	hash 0	# rjenkins1
+	item hostc weight 0.000
+	item osd.2 weight 0.018
+	item osd.0 weight 0.018
+	item osd.1 weight 0.018
+}
+host hostd {
+	id -14		# do not change unnecessarily
+	id -17 class hdd		# do not change unnecessarily
+	id -25 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+}
+rack rackB1 {
+	id -11		# do not change unnecessarily
+	id -20 class hdd		# do not change unnecessarily
+	id -26 class ssd		# do not change unnecessarily
+	# weight 0.055
+	alg straw2
+	hash 0	# rjenkins1
+	item hostd weight 0.000
+	item osd.4 weight 0.018
+	item osd.5 weight 0.018
+	item osd.3 weight 0.018
+}
+host hoste {
+	id -15		# do not change unnecessarily
+	id -16 class hdd		# do not change unnecessarily
+	id -27 class ssd		# do not change unnecessarily
+	# weight 0.000
+	alg straw2
+	hash 0	# rjenkins1
+}
+rack rackC1 {
+	id -12		# do not change unnecessarily
+	id -19 class hdd		# do not change unnecessarily
+	id -28 class ssd		# do not change unnecessarily
+	# weight 0.055
+	alg straw2
+	hash 0	# rjenkins1
+	item hoste weight 0.000
+	item osd.8 weight 0.018
+	item osd.6 weight 0.018
+	item osd.7 weight 0.018
+}
+root East-DC1 {
+	id -9		# do not change unnecessarily
+	id -22 class hdd		# do not change unnecessarily
+	id -29 class ssd		# do not change unnecessarily
+	# weight 0.166
+	alg straw2
+	hash 0	# rjenkins1
+	item rackA1 weight 0.055
+	item rackB1 weight 0.055
+	item rackC1 weight 0.055
+}
+
+# rules
+rule replicated_rule {
+	id 0
+	type replicated
+	min_size 1
+	max_size 10
+	step take East-DC1
+	step chooseleaf firstn 0 type host
+	step emit
+}
+
+rule on-ssd-distributed {
+  id 1
+	type replicated
+	min_size 1
+	max_size 10
+	step take East-DC1 class ssd
+	step chooseleaf firstn 1 type rack
+	step emit
+	step take East-DC1 class hdd
+	step chooseleaf firstn -1 type rack
+	step emit
+}
+
+# end crush map

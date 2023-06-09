@@ -1,0 +1,5 @@
+[grafana]
+name=grafana
+baseurl=https://mirrors.cloud.tencent.com/grafana/yum/el7/
+enabled=1
+gpgcheck=0

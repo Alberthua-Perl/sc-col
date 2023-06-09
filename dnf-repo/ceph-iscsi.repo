@@ -1,0 +1,27 @@
+[ceph-iscsi]
+name=ceph-iscsi noarch packages
+baseurl=http://download.ceph.com/ceph-iscsi/3/rpm/el7/noarch
+enabled=1
+gpgcheck=1
+gpgkey=https://download.ceph.com/keys/release.asc
+type=rpm-md
+
+[ceph-iscsi-source]
+name=ceph-iscsi source packages
+baseurl=http://download.ceph.com/ceph-iscsi/3/rpm/el7/SRPMS
+enabled=0
+gpgcheck=1
+gpgkey=https://download.ceph.com/keys/release.asc
+type=rpm-md
+
+[tcmu-runner]
+name=tcmu-runner
+baseurl=https://3.chacra.ceph.com/r/tcmu-runner/master/eef511565078fb4e2ed52caaff16e6c7e75ed6c3/centos/7/flavors/default/x86_64/
+priority=1
+gpgcheck=0
+
+[ceph-iscsi-conf]
+name=ceph-iscsi-config
+baseurl=https://3.chacra.ceph.com/r/ceph-iscsi-config/master/7496f1bc418137230d8d45b19c47eab3165c756a/centos/7/flavors/default/noarch/
+priority=1
+gpgcheck=0

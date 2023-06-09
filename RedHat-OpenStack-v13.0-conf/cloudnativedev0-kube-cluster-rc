@@ -1,0 +1,17 @@
+export CLOUDPROMPT_ENABLED=0
+export OS_NO_CACHE=True
+export COMPUTE_API_VERSION=1.1
+export OS_USERNAME=cloudnativedev0
+export no_proxy=,172.25.250.50,172.25.249.50
+export OS_USER_DOMAIN_NAME=kube-poc
+export OS_VOLUME_API_VERSION=3
+export OS_CLOUDNAME=overcloud
+export OS_AUTH_URL=http://172.25.250.50:5000//v3
+export NOVA_VERSION=1.1
+export OS_IMAGE_API_VERSION=2
+export OS_PASSWORD=redhat
+export OS_PROJECT_DOMAIN_NAME=kube-poc
+export OS_IDENTITY_API_VERSION=3
+export OS_PROJECT_NAME=kube-cluster
+export OS_AUTH_TYPE=password
+export PYTHONWARNINGS="ignore:Certificate has no, ignore:A true SSLContext object is not available"

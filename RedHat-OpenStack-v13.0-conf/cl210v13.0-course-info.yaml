@@ -1,0 +1,303 @@
+# cl210v13.0-course-info.yaml
+undercloud:
+  - director node
+  - all-in-one openstack cluster
+overcloud:
+  - controller, compute, computehci nodes
+
+class environment:
+  kiosk@foundation0:
+    - $ rht-vmctl start all
+      # wait all nodes until running
+      # controller0, compute{0,1}, computehci0, ceph0 can be powered by power node automatically.
+      # Note: Don't power on by manual generally.
+    - $ rht-vmctl status all
+      # wait 8~10 mins to verify all nodes status
+    - $ ssh stack@director
+      # ssh login director node by stack user account
+
+  stack@director:
+    - $HOME/stackrc: connect openstack cluster environment file
+    - commands:
+      ### Please run following commands after all nodes running!
+      - $ openstack baremetal node list
+        # verify all overcloud nodes status
+        # Note: 
+        #   1. 如果在返回结果中发现部分节点的电源状态为 power off 的话，那么先尝试以下命令：
+        #      $ openstack baremetal node power on <node_name>
+        #   2. 若以上命令没有响应，那么尝试在 virt-manager 控制面板上点亮节点。
+      - $ openstack compute service list
+      - $ openstack server list
+        # verify overcloud node status
+        # Note:
+        #   如果部分节点出现 SHUTOFF 状态的话，那么尝试以下的命令：
+        #   $ openstack server set --state active <node_name>
+    - $HOME/undercloud.conf:
+        - inspection_iprange: 172.25.249.150,172.25.249.180
+          # FIRST POWER ON:
+          #   director node allocate ip address from inspection_iprange to new node
+          #   to complete hardware inspection
+          bm-deploy-kernel image: boot first power on
+          bm-deploy-ramdisk image: boot first power on
+        - dhcp_start: 172.25.249.51
+          dhcp_end: 172.25.249.59
+          # SECOND POWER ON:
+          #   director node allocate ip address from dhcp_start to dhcp_end to
+          #   new mode to complete OS install and rhosp software deployment
+          overcloud-full-vmlinuz image: boot second power on
+          overcloud-full-initrd image: boot second power on
+          overcloud-full image: rhosp software and environment
+    - $ ipmitool -I lanplus -U admin -P password -H 172.25.249.101 power status
+      # verify node power status
+
+  root@power:
+    # power node apply power to start overcloud.
+    - $ ps aux | grep python
+    - $ ls -lh /usr/local/bin/virshbmc.py
+
+  root@utility:
+    # utility node apply idm domain and NICs for ovn provider network.
+    - $ kinit admin
+      Password for admin@LAB.EXAMPLE.NET: RedHat123^
+      # get credential for Kerberos admin
+    - $ ipa user-show <ipa_username>
+      # get ipa user account info, e.g developer0, architect1
+
+container service:
+  - rhosp 12: community P
+  - rhosp 13: community Q
+  - rhosp 16: community T
+  - NOTE: From rhosp 12 docker container has been as a method to run openstack service.
+  - director node: systemd manage openstack service
+    overcloud nodes: docker manage openstack service
+
+  root@controller0:
+    - $ docker ps --format="table {{.Names}}\t{{.Status}}"
+      # verify container openstack service
+    - $ docker images --format="table {{.Repository}}\t{{.Tag}}"
+      # verify docker images in local docker cache(/var/lib/docker)
+
+  # All rhosp container images come from RedHat Offical Image Registry.
+  # User can download all images to local tar ball and push them to internal
+  # image registry(docker-distribution).
+    
+    - current openstack service log location: /var/log/containers/<servicename>/
+    - current openstack service config location: /var/lib/config-data/puppet-generated/<servicename>/
+
+    - controller0 node: ceph monitor
+      computehci0 node: compute and ceph storage node
+      ceph0 node: ceph storage node
+
+  stack@director:
+    - $ sudo systemctl status docker-distribution.service
+      # verify registry service
+    - $ cat /etc/docker-distribution/registry/config.yml
+      # image cache: /var/lib/registry  
+
+keystone:
+  - function:
+    - authentication
+    - authorization
+    - RBAC: role-based access control
+  - keywords:
+    - identity:
+        - user: user not belongs to any project
+        - keystone v3 feature:
+          - group
+          - multi-domain:
+              - openstack internal domain: default(keystone v2/v3)
+              - openstack external domain: AD, openldap, ipa, redhat-idm, and so on
+    - project:
+        - also called tenant
+        - all resources collection in one domain including flavor, image, security-group, network, subnet, port and so on
+    - resource
+    - token:
+        - fernet token:
+          - primary key: highest index
+          - secondary key: 0~highest index(perhaps one or more)
+          - stagged key: 0 index
+    - policy: 
+      - policies consist of role
+      - role: admin, project_admin, _member_(rhosp16 use 'member')
+    - role assignment
+
+user and group:
+  ## stack@director
+  - $ openstack workflow list | grep fernet
+  - $ openstack workflow execution create tripleo.fernet_keys.v1.rotate_fernet_keys '{"container": "overcloud"}'
+    # rotate overcloud fernet token key
+
+  ## run following commands on overcloud
+  - $ openstack domain list
+  - $ openstack domain create demotest
+  - $ openstack user list --domain demotest
+  - $ openstack user create --domain demotest --password-prompt appuser0
+    # create user in domain
+  - $ openstack role add --user <user-id> --domain <domain-id> admin
+  - $ openstack role assignment list --user <user-id> --domain <domain-id> --names
+  - $ openstack project create --doamin demotest webfront
+  - $ openstack user create --domain demotest --project webfront --project-domain demotest --password-prompt appuser1
+    # create user in domain attached specfied project
+  - $ openstack role add --user appuser1 --user-domain demotest --project webfront admin
+  - $ openstack role add --user appuser1 --user-domain demotest --project webfront _member_
+  - $ openstack user delete --domain demotest appuser2
+  - $ openstack group create appgrp --domain demotest
+
+virtual machine image:
+  - $ openstack image save --file rhel7.qcow2 6b0128a9-4481-4ceb-b34e-ffe92e0dcfdd
+    # save image from openstack glance backend to local file
+  - diskimage-builder:
+      - base image:
+          - qcow2(default) image format
+          - ${DIB_LOCAL_IMAGE} environment variable define base image location
+      - elements: 
+          - collection of shell scripts for different usage
+          - customized script in elements
+      - environment variable
+          - ${DIB_YUM_REPO_CONF}
+          - ${ELEMENTS_PATH}
+          - ${DIB_LOCAL_IMAGE}
+          
+openstack integrated with RedHat IdM: NA
+
+RedHat Ceph Storage architecture:
+  - logical architecture:
+    - ceph: rados
+    - librados:
+        - librbd: block(host, vm)
+        - libradosgw: object(app)
+        - directly call rados: app(c, c++, java, python, ruby, php, golang?)
+    - posix-compliant filesystem: cephfs
+  - ceph node role:
+      - ceph-mon:
+          - NECESSARY
+          - description: ceph monitor node
+          - number: 1 or 3 or 2N+1 nodes
+      - ceph-osd:
+          - NECESSARY
+          - description: ceph object store data node
+          - role: store object data and each disk as osd disk
+      - ceph-mds: 
+          - optional 
+          - description: ceph metadata node
+          - role: apply cephfs metadata info
+      - ceph-mgr: 
+          - optional
+          - description: ceph manager node
+          - role: collection ceph cluster metrics and grafana & prometheus show data info
+      - ceph-rgw:
+          - optional
+          - description: ceph radosgw node
+          - role: apply authentication and authorization of cephx to ceph cluster
+          - note: out of ceph cluster
+      - ceph-iscsi-gateway: 
+          - optional
+          - description: ceph iscsi gateway
+  - CL210v13.0 course OpenStack cluster:
+      - controller0: ceph mon
+      - computehci0: ceph osd (3 osd disk)
+      - ceph0: ceph osd (3 osd disk)
+      - storage management network: control plane (mon-osd heartbeat, control command, etc)
+      - storage network: data plane (primary-osd-and-secondary-osd heartbeat, recovery, rebalance, clean, deep-clean, etc)
+      - commands:
+          ### root@controller0:
+          - $ ceph -s
+          - $ ceph osd pool ls [detail]         
+          - $ ceph osd tree
+            # Ceph 集群中各个节点的 OSD 磁盘信息
+          - $ rbd --pool <pool_name> ls images
+          - $ ceph auth list
+          - $ ceph auth get client.<name>
+            # 查看指定 Ceph 客户端的 keyring 与 caps 权限信息
+          - $ ceph auth print-key client.<name>
+          - $ systemctl list-units -t service ceph\*
+            # 列举 ocntroller0 节点的 Ceph 组件
+      - ceph storage pools:
+          - vms(ephemeral): instance root disk, flavor ephemeral disk, flavor swap disk
+          - images: glance images
+          - volumes(persistent): persistent volume, instance root volume(from instance root disk)
+          - manila_metadata: ceph mds metadata
+          - manila_data: ceph filesystem shared object data
+
+OVN network architecture:
+  ### root@controller0:
+  - $ openstack hypervisor list -c "Hypervisor Hostname" -c "Host IP"
+    # 查看控制节点、计算节点与超融合节点的列表信息
+  - $ openstack network list -c ID -c Name [--internal|--external]
+  - $ openstack subnet list
+  - $ openstack port list
+  - $ openstack router list
+  - $ ovs-vsctl show
+    # 查看当前节点的 OVS 网桥与端口信息
+  - $ ovs-vsctl list-br
+    # 查看当前节点的 OVS 网桥
+  - $ ovs-vsctl list Open_vSwitch
+    ## external_ids        : {hostname="controller0.overcloud.example.com", ovn-bridge=br-int, ovn-bridge-mappings="datacentre:br-ex,
+    ## vlanprovider1:br-eth3,vlanprovider2:br-eth4,storage:br-trunk", ovn-cms-options=enable-chassis-as-gw, ovn-encap-ip="172.24.2.1", 
+    ## ovn-encap-type=geneve, ovn-remote="tcp:172.24.1.50:6642", rundir="/var/run/openvswitch", system-id="85c87734-e866-4225-b305-471357c68b8a"}
+    # 查看 OVN 控制平面的整体信息
+  - $ grep -Ev '^#|^$' /var/lib/config-data/puppet-generated/neutron/etc/neutron/plugins/ml2/ml2_conf.ini
+    ## [ml2_type_flat]
+    ## flat_networks=datacentre
+    ## [ml2_type_vlan]
+    ## network_vlan_ranges=datacentre:1:1000,vlanprovider1:101:104,vlanprovider2:101:104,storage:30:30 
+  - $ export OVN_NB_DB=tcp:172.24.1.50:6641
+    # 导出 OVN 北向数据库的连接环境变量
+    # 注意：只有当该环境变量导出后才能使用 ovn-nbctl 命令操作 OVN 北向数据库
+  - $ ovn-nbctl ls-list
+    # 153db687-27fe-4f90-a3f0-2958c373dcc2 (neutron-7a6556ab-6083-403e-acfc-79caf3873660)
+    # aca840be-670a-4eb3-9b36-4246c0eabb6c (neutron-9838d8ed-3e64-4196-87f0-a4bc59059be9)
+    # b2cc3860-13f9-4eeb-b328-10dbc1f1b131 (neutron-d55f6d1e-c29e-4825-8de4-01dd95f8a220)
+    # c5b32043-cd23-41ac-9197-ea41917870bb (neutron-e14d713e-c1f5-4800-8543-713563d7e82e)
+    # f0f71887-2544-4f29-b46c-04b0aa0b2e52 (neutron-fc5472ee-98d9-4f6b-9bc9-544ca18aefb3)
+  - ovn-nbctl show 153db687-27fe-4f90-a3f0-2958c373dcc2
+    # 查看 OVN 逻辑交换机的连接与端口信息
+  - $ ovn-nbctl lr-list
+    # 查看 OVN 逻辑路由器的连接与端口信息
+  - $ ovn-nbctl lr-nat-list <ovn-logical-router>
+    # 查看 OVN 逻辑路由器中的 NAT 规则
+
+    # Note:
+    #   ML2 机制驱动中定义了 ml2_type_flat 为 datacentre，而在 Open_vSwitch 表中 external_ids 定义了 ovn-bridge-mappings，
+    #   实现了 openstack-neutron-server --> ml2-driver --> ovn-bridge-mappings --> eth2(underlay network)。
+
+  - OpenStack Network type:
+      - self-service(tenant) network:
+          - depend on internal network ovn dhcp options
+            - $ ovn-nbctl dhcp-options-list
+              # 查看 OVN DHCP 的信息
+            - $ ovn-nbctl dhcp-options-get-options <dhcp-options-uuid>
+              # 查看指定 OVN DHCP 信息的详细参数
+          - depend on external floating ip if external want to access internal
+      - provider network:
+          - instance connect to underlay network
+          - instance without floating ip
+          - depend on privider network ovn dhcp options
+            # 这里的 DHCP 选址区段来自于连接的物理网络的地址区段
+          - instance can access external network and external can also access instance
+
+host aggregate:
+  - logical aggregate: including different hosts with some same functions
+  - flavor: with specified properties point to logical aggregate
+  - instance: use flavor to build and scheduled to hosts of logical aggregate
+
+heat engine:
+  - heat template: include all resources and default variables
+  - environment file: customized variables to overwrite default variables in heat template
+  - use 'heat template' and 'environment file' to create heat stack
+  - heat stack is all resources defined in heat template
+  - resources include instance, network, flavor, image, security-group, floating-ip, etc.
+
+lab-demo:
+  - description: how to deploy a instance for openstack cluster external access?
+  - needed resources:
+      - flavor
+      - image
+      - tenant internal network
+      - tenant internal subnet
+      - router
+      - external network
+      - fip(floating ip)
+      - security-group
+      - security-group-rule
+      - keypair

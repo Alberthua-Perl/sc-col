@@ -1,0 +1,10 @@
+unset OS_SERVICE_TOKEN
+export OS_AUTH_URL=http://172.25.250.50:5000/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_PASSWORD=redhat
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_PROJECT_NAME=production
+export OS_REGION_NAME=regionOne
+export OS_USERNAME=operator1
+export OS_USER_DOMAIN_NAME=Example
+export PS1='[\u@\h \W(operator1-production)]\$ '

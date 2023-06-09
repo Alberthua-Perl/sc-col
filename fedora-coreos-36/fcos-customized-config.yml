@@ -1,0 +1,38 @@
+variant: fcos
+version: 1.1.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDB9YOQKFrJv1J3Y7iF3/KtH9IbmvWdsnShHqpaxsbG+VI6vqDQzivFr0NnBcRbI5d7qMu3To/z3MrvD9j6fJcmU7CJeKI39AGct4Jt/Hrgk7ikCFbjaXvqCCaIcDZfuc4h+EeUPoj3Zbv6TSouGOy9n7Svuo1jyfpDu1pytLqsedJIToyCQESs5uYrXnQXqEuxAPMmlVB2Jwx0KtZXSf1M9FhT7gnclZH1mnT0mUZfknj01Iq0DprOzSeh5eu5ZNHv9LWxBrBPmUU5kNr93gAb0hiOtuhRAk625R4SPJVxuXqhsG3eTygehnGpPkZC8+cvsGgSFZhTmY5VjnXfG+Uj godev@cloud-ctl.domain12.example.com
+    - name: cloud-admin
+      password_hash: $y$j9T$j0ODWvNUDSXcEcwpDH141.$dvAEVxBHUWbW/NnPd90qkg0Haq6vgkcKF151jvLDgYA
+      # plain text password is redhat
+      home_dir: /opt/cloud-admin
+      no_create_home: false
+      groups:
+        - wheel
+      shell: /bin/bash
+storage:
+  files:
+    - path: "/etc/NetworkManager/system-connections/Wired connection 1.nmconnection"
+      contents:
+        local: ./Wired_connection_1.nmconnection
+      mode: 0644
+    - path: /etc/hostname
+      contents:
+        local: ./hostname
+      mode: 0644
+  disks:
+    - device: /dev/vdb
+      wipe_table: true
+      partitions:
+        - number: 1
+          label: var
+  filesystems:
+    - path: /var
+      device: /dev/disk/by-partlabel/var
+      format: xfs
+      wipe_filesystem: true
+      label: var
+      with_mount_unit: true

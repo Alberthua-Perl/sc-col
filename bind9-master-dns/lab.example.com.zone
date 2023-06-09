@@ -1,0 +1,32 @@
+$TTL 1D
+@	IN SOA	servera.lab.example.com. root.lab.example.com. (
+					2021030201	; serial
+					1D	; refresh
+					1H	; retry
+					1W	; expire
+					3H ; minimum
+)
+
+; Master and Slave Name Server Inforamtion
+@		IN	NS	servera.lab.example.com.
+		IN	NS	serverb.lab.example.com.
+
+; IP Address of Name Server
+servera	IN	A	10.197.11.221
+serverb	IN	A	10.197.11.222
+
+; Mail Exchange, A Record and CNAME Record
+lab.example.com.	IN	MX	10	mail.lab.example.com.
+
+; Application Server Infornamtion
+www					IN	A	10.197.11.221
+mail				IN	A	10.197.11.222
+repository	IN	A	10.197.11.220
+ipa-server	IN	A	10.197.11.223
+ipa-client	IN	A	10.197.11.224
+
+cloud				IN	CNAME		www.lab.example.com.
+learnpath		IN	CNAME		www.lab.example.com.
+bbs					IN	CNAME		www.lab.example.com.
+base-server IN	CNAME		repository.lab.example.com.
+
