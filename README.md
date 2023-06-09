@@ -1,2 +1,3 @@
-# scripts-confs
-Include Shell and Python scripts, configuration files, Kickstart file and so on.
+## sc-col repository
+
+Include shell, perl and python scripts, configuration files, kickstart file and so on.
