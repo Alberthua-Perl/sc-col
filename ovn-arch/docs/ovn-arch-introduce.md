@@ -1,6 +1,6 @@
 ## Open Virtual Network（OVN）概述与分析
 
-#### OVN 手册查询：
+### OVN 手册查询：
 
 1. $ man 7 ovn-architecture：
 
@@ -27,9 +27,7 @@
    
    > **注意**：以下的逻辑网络即为 OVN 逻辑网络。
 
-
-
-#### Open Virtual Network（OVN）简介：
+### Open Virtual Network（OVN）简介：
 
 1. `OVN` 是 Open vSwitch 社区在 2015 年 1 月份才宣布的一个子项目。
 
@@ -73,17 +71,13 @@
 
 6. OVN 可以和很多 CMS（Cloud Management System）集成到一起，如 Openstack Neutron。
 
-
-
-#### OVN 特性：
+### OVN 特性：
 
 1. 提供虚拟网络抽象（L2、L3、overlays 和物理网络的连通）、ARP 代答
 2. 完全分布式 DHCP、分布式 L3、NAT 和 LB、灵活的 ACL
 3. L2 软网关、L3 网关从逻辑网络到物理网络支持 TOR
 
-
-
-#### OVN 中的节点角色：
+### OVN 中的节点角色：
 
 1. OVN Central（OVN 中心节点）：
 
@@ -103,17 +97,13 @@
 
 3. OVN 与 OVS 对比：
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/ovs-ovn-compare.png)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/ovs-ovn-compare.png)
 
-
-
-#### OVN 架构概述：
+### OVN 架构概述：
 
 1. OVN 架构示意：
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/ovn-arch.jpg)
-
-   
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/ovn-arch.jpg)
 
 2. OpenStack/CMS plugin 是 CMS 和 OVN 的接口，将 CMS 的配置转化成 OVN 的格式写到 `Nnorthbound DB` 中。
 
@@ -143,9 +133,7 @@
 
 7. **`ovs-vswitchd`** 和 **`ovsdb-server`** 是 OVS 的两个守护进程。
 
-
-
-#### OVN 逻辑网络（logical network）：
+### OVN 逻辑网络（logical network）：
 
 1. OVN 逻辑网络实现与物理网络相同的概念，但它们通过隧道或其他封装与物理网络隔离。
 
@@ -203,9 +191,7 @@
    >
    > e. **`router`**：逻辑交换机与逻辑路由器连接的端口。
 
-
-
-#### OVN Northbound DB（OVN 北向数据库）：
+### OVN Northbound DB（OVN 北向数据库）：
 
 1. Northbound DB 是 OVN 和 CMS 之间的接口，Northbound DB 保存 CMS 产生的数据。
 
@@ -219,11 +205,11 @@
 
    > a. 一种是 **`overlay logical switch`**，对应于 neutron network，每创建一个 neutron network，OVN 会在表中增加一行。
    >
-   >    ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/overlay-logical-switch.png)
+   >    ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/overlay-logical-switch.png)
    >
    > b. 另一种是 **`bridged logical switch`**，用于连接逻辑网络和物理网络，被 VTEP gateway 使用。
    >
-   >    ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/briged-logical-switch.png)
+   >    ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/briged-logical-switch.png)
 
       b. Logical_Switch 保存 logical port（指向表 `Logical_Port`）和应用其上的 ACL（指向表 `ACL`）。   
 
@@ -231,21 +217,19 @@
 
       逻辑交换机的端口类型：localport、router、localnet、端口的 IP 和 MAC 地址、端口 UP 或 Down 的状态。
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/logical-switch-port-type.png)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/logical-switch-port-type.png)
 
    3）**`ACL`**：
 
       每条ACL规则包含匹配的内容、方向、以及动作。
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/logical-switch-port-acl.png)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/logical-switch-port-acl.png)
 
    > **注意**：每行代表一个应用到逻辑交换机上的 ACL 规则，若逻辑交换机上面的所有端口都没有配置安全组，那么该逻辑交换机上不应用 ACL。
 
    4）其他相关的表：Logical_Router、Logical_Router_Port、NAT。
 
-
-
-#### OVN Southbound DB（OVN 南向数据库）：
+### OVN Southbound DB（OVN 南向数据库）：
 
 1. Southbound DB 处在 OVN 架构的中心，它是 OVN 中非常重要的一部分，与 OVN 的其他组件都有交互。
 
@@ -301,7 +285,7 @@
 
       b. 端口所处的 chassis 由 ovn-controller 或 ovn-controller-vtep 设置，其余的值由 ovn-northd 设置。   
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/ovn-southbound-port-binding.png)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/ovn-southbound-port-binding.png)
 
    > **注意**：逻辑端口与 chassis 的绑定关系可通过 `ovn-sbctl show` 命令输出中的 `Port_Binding` 确认，而 OVS 端口与逻辑端口的映射关系可通过 OVS Interface 数据库中 OVS 端口的 **`external_ids:iface-id`** 确认。
 
@@ -311,9 +295,7 @@
    
       e. **逻辑网络与物理网络绑定关系的数据：表 Datapath_Binding、表 Port_Binding。**
 
-
-
-#### OVN Chassis：
+### OVN Chassis：
 
 1. 当 ovn-controller 启动时，将读取本地 OVS 数据库 **`Open_vSwitch`** 表中的值：
 
@@ -339,11 +321,9 @@
 
 4. 若 HV 有多个接口可以建立隧道，可以在 ovn-controller 启动之前，把每对值填在 Open_vSwitch 表中。
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/ovs-openvswitch-table.png)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/ovs-openvswitch-table.png)
 
-
-
-#### OVN tunnel（OVN 隧道）：
+### OVN tunnel（OVN 隧道）：
 
 1. OVN 支持的隧道类型有三种：Geneve、STT、VXLAN。
 
@@ -367,7 +347,7 @@
 
       c. 该标识符长 24-bit，由 ovn-northd 分配，全局唯一，保存在 Southbound DB 的 **`Datapath_Binding`** 表的  **`tunnel_key`** 中。 
 
-   ![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/ovn-arch-introduce/logical-datapath-identifier.png)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/ovn-arch-introduce/logical-datapath-identifier.png)
 
    2）**`logical input port identifier`**（逻辑入端口标识符）：
 
@@ -415,9 +395,7 @@
    > 
    > c. 使用 Neutron 创建网络时指定 tunnel 类型和 tunnel ID（VNID）是无用的，OVN不做处理！
 
-
-
-#### Neutron 与 OVN 对比：   
+### Neutron 与 OVN 对比：   
 
 1. Neutron 二层报文处理通过 OVS OpenFlow 流表实现，三层报文处理通过 Linux TCP/IP 协议栈实现。
 
@@ -470,9 +448,7 @@
 9. OVS 的 conntrack 由 Linux kernel netfilter 模块来实现，调用 **`netfiler userspace netlink API`** 将报文发送给 Linux kernel 的 **`netfiler connection tracker`** 模块进行处理。
 10. 该模块给每个连接维护一个连接状态表（CT table），记录这个连接的状态，OVS 获取连接状态，OpenFlow 流可以匹配这些连接状态。
 
-
-
-#### 常用 OVS OpenFlow 相关命令：   
+### 常用 OVS OpenFlow 相关命令：   
 
 ```bash
 $ sudo ovn-nbctl show
@@ -491,18 +467,13 @@ $ sudo ovs-ofctl dump-flows br-int
 # 查看 OpenFlow 流表与 OVN 逻辑网络映射关系
 ```
 
-
-
-#### 参考链接：
+### 参考链接：
 
 - 云计算底层技术 - 使用 openvswitch：
   https://opengers.github.io/openstack/openstack-base-use-openvswitch/
-
 - 云计算底层技术 - openflow 在 OVS 中的应用：
   https://opengers.github.io/openstack/openstack-base-openflow-in-openvswitch/
-
 - OVS 调试介绍：
   https://www.cnblogs.com/silvermagic/p/7666051.html
-
 - ONV 架构：
   https://www.cnblogs.com/allcloud/p/8058906.html
