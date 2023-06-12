@@ -1,6 +1,6 @@
 ## 配置 OVN 逻辑交换机
 
-#### 文档说明：
+### 文档说明：
 
 1. 关于 Open Virtual Network (OVN) 的架构与概述可参考 **Open Virtual Network（OVN）概述与分析**
 2. OS 版本：CentOS Linux release 7.4.1708 (Core)
@@ -15,7 +15,7 @@
 | ovn-node1   | 2    | 2         | 172.25.250.188/24 | ovn-host    |
 | ovn-node2   | 2    | 2         | 172.25.250.189/24 | ovn-host    |
 
-#### OVN架构部署：
+### OVN架构部署：
 
 1. ovn-central 部署用脚本参考如下：
    https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/deploy-ovn-central.sh
@@ -23,11 +23,11 @@
 2. ovn-host 部署脚本参考如下：
    https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/deploy-ovn-host.sh
 
-#### 创建 OVN 逻辑网络：
+### 创建 OVN 逻辑网络：
 
 1. 此次创建的 OVN 逻辑网络拓扑：
 
-![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/config-ovn-logical-switch-demo/ovn-logical-switch-1.jpg)
+   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/config-ovn-logical-switch-demo/ovn-logical-switch-1.jpg)
 
 2. 通过 ip、ovs-vsctl、ovn-nbctl、ovn-sbctl 命令创建 OVS 与 OVN 相关的逻辑组件，其具体的数据转发规则由各个 ovn-host 节点的 OVS 流规则实现。
 
@@ -78,9 +78,7 @@
    若使用 ip link add <*veth_name*> type veth peer name <*veth_peer_name*> 命令创建的 `veth pair`，将其作为 OVS 端口添加至 OVS bridge 上时（ `--may-exist` 选项），无法设置其 type 类型为 `internal` 而不能正常通信，因此该场景中直接使用 vm1 接口同时连接namespace 与 OVS bridge。
    
    若直接使用 KVM 虚拟机时，可在 KVM 虚拟机的 domain xml 定义文件中指定其 `tap` 设备关联的 OVS bridge 端口而建立联系。
-   
-   
-   
+      
    2）ovn-host2 节点上创建 namespace：
    
    ```bash
@@ -163,7 +161,7 @@
 
    可通过同样的方法在 ovn-host1 节点或 ovn-host2 节点上创建 vm3 namespace，以验证端口绑定与网络连通性。
 
-#### OVS 流规则分析示例：
+### OVS 流规则分析示例：
 
 如上所示，该场景中使用 Linux network namespace 来模拟 KVM 虚拟机接入 OVS bridge，并将其端口映射至 OVN 逻辑交换机端口的情况，测试各 ovn-host 节点间东西向流量的连通性。
 
@@ -254,9 +252,9 @@ cookie=0x0, duration=56135.741s, table=65, n_packets=20, n_bytes=1512, idle_age=
 
 Geneve 隧道封装数据包抓包的原始数据，需使用 Analyze -> Decode As 进行协议转换，由于无 Geneve 协议，因此使用 VXLAN 协议代替。
 
-![](https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/images/config-ovn-logical-switch-demo/ovn-ls-geneve.jpg)
+![](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/images/config-ovn-logical-switch-demo/ovn-ls-geneve.jpg)
 
-#### 环境清理：
+### 环境清理：
 
 为方便后续实验，需清除当前环境中创建的组件，如下所示：
 
@@ -275,7 +273,7 @@ $ sudo ovs-vsctl --if-exists --with-iface del-port br-int vm2
 # 删除 namespace 与 OVS bridge 及 namespace 关联的端口
 ```
 
-#### 参考链接：
+### 参考链接：
 
 - OVN 简单部署：https://www.cnblogs.com/silvermagic/p/7666134.html
 - 介绍和安装 OVN：https://www.sdnlab.com/19157.html
