@@ -17,11 +17,9 @@
 
 ### OVN架构部署：
 
-1. ovn-central 部署用脚本参考如下：
-   https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/deploy-ovn-central.sh
+1. [ovn-central 部署脚本示例](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/deploy-ovn-central.sh)
 
-2. ovn-host 部署脚本参考如下：
-   https://github.com/Alberthua-Perl/summary-scripts/blob/master/ovn-arch/deploy-ovn-host.sh
+2. [ovn-host 部署脚本示例](https://github.com/Alberthua-Perl/sc-col/blob/master/ovn-arch/deploy-ovn-host.sh)
 
 ### 创建 OVN 逻辑网络：
 
@@ -277,4 +275,3 @@ $ sudo ovs-vsctl --if-exists --with-iface del-port br-int vm2
 
 - OVN 简单部署：https://www.cnblogs.com/silvermagic/p/7666134.html
 - 介绍和安装 OVN：https://www.sdnlab.com/19157.html
-
