@@ -37,10 +37,7 @@
    grant all on Syslog.* to '${SYSLOG_USER}'@'${CNI_GATEWAY}' identified by '${SYSLOG_PASS}';
    ```
 
-- loganalyzer 容器镜像基于 `Apache httpd server` 构建，参考如下：
-
-  https://github.com/Alberthua-Perl/Dockerfile-examples/tree/master/loganalyzer-viewer
-
+- loganalyzer 容器镜像基于 `Apache httpd server` 构建，可参考该 [链接](https://github.com/Alberthua-Perl/Dockerfile-examples/tree/master/loganalyzer-viewer)。
 - loganalyzer 项目基于 PHP，可作为 MySQL 数据库检索日志数据的 Web 前端。
 - MySQL 容器使用持久化存储（卷映射）时，由于使用 Red Hat 官方镜像，启动容器时不使用 root 用户运行 mysql 守护进程，而使用 **UID 27** (mysql) 运行，需设置宿主机映射目录的所有者与所属组，不更改将无法运行容器。容器中报错日志如下所示：
     
