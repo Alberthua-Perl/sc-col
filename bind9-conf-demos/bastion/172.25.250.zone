@@ -1,0 +1,22 @@
+; Reverse DNS lookup records for lab.example.com (172.25.250.0/24)
+;
+; For use in RH358 classrooms.
+
+$TTL 86400
+250.25.172.IN-ADDR.ARPA. IN  SOA bastion.lab.example.com. root.bastion.lab.example.com. ( 
+				2020040800	; serial number
+				1H 		; refresh slave
+				5M 		; retry query
+				1W 		; expire
+				1M 		; negative TTL 
+)
+
+; owner			TTL	CL  type	RDATA
+@				IN  NS		bastion.lab.example.com.
+254			600	IN  PTR		bastion.lab.example.com.
+
+9			600	IN  PTR		workstation.lab.example.com.
+10			600	IN  PTR		servera.lab.example.com.
+11			600	IN  PTR		serverb.lab.example.com.
+12			600	IN  PTR		serverc.lab.example.com.
+13			600	IN  PTR		serverd.lab.example.com.

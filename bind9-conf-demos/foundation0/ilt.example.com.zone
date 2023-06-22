@@ -1,0 +1,18 @@
+$TTL 86400
+ilt.example.com. IN  SOA foundation0.ilt.example.com. root.foundation0.ilt.example.com. ( 
+				2015071700	; serial number
+				1H 		; refresh slave
+				5M 		; retry query
+				1W 		; expire
+				1M 		; negative TTL 
+)
+; owner			TTL	CL  type		RDATA
+@				IN  NS		foundation0.ilt.example.com.
+@				IN  MX  	10  foundation0.ilt.example.com.
+
+ilt.example.com.               	IN  A		172.25.254.250
+foundation0.ilt.example.com.	IN  A		172.25.254.250
+training.ilt.example.com.       CNAME           foundation0.ilt.example.com.
+$GENERATE 1-200 foundation$ 	A 172.25.254.$
+$GENERATE 0-200 f$		CNAME		foundation$.ilt.example.com.
+jegui.ilt.example.com.          IN  A           172.25.254.252

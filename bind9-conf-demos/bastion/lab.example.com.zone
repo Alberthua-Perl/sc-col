@@ -1,0 +1,27 @@
+; Forward DNS lookup records for lab.example.com (172.25.250.0/24)
+;
+; For use in RH358 classrooms.
+
+$TTL 86400
+lab.example.com. IN  SOA bastion.lab.example.com. root.bastion.lab.example.com. (
+				2020040800	; serial number
+				1H 		; refresh slave
+				5M 		; retry query
+				1W 		; expire
+				1M 		; negative TTL
+)
+; owner			TTL	CL  type		RDATA
+@				IN  NS			bastion.lab.example.com.
+@				IN  MX  		10  bastion.lab.example.com.
+@				IN  A			172.25.250.254
+
+; delegate backend.lab.example.com subdomain to serverb
+backend				IN  NS			serverb.lab.example.com.
+
+bastion			600	IN  A			172.25.250.254
+
+workstation		600	IN  A			172.25.250.9
+servera			600	IN  A			172.25.250.10
+serverb			600	IN  A			172.25.250.11
+serverc			600	IN  A			172.25.250.12
+serverd			600	IN  A			172.25.250.13

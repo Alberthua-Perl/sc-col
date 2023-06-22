@@ -1,0 +1,15 @@
+$TTL 86400
+254.25.172.IN-ADDR.ARPA. IN  SOA foundation0.ilt.example.com. root.foundation0.ilt.example.com. (
+				2015071700	; serial number
+				1H 		; refresh slave
+				5M 		; retry query
+				1W 		; expire
+				1M 		; negative TTL 
+)
+
+; owner			TTL	CL  type	RDATA
+@				IN  NS  	foundation0.ilt.example.com.
+$GENERATE	1-200	$	PTR	foundation$.ilt.example.com.
+250				IN  PTR		foundation0.ilt.example.com.
+252                             IN  PTR         jegui.ilt.example.com.
+254				IN  PTR		classroom.example.com.
