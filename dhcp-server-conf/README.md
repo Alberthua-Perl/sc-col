@@ -1,4 +1,4 @@
-## DHCP 协议的原理与概述
+## DHCP 原理与配置
 
 ### DHCP 的作用：
 - DHCP (Dynamic Host Configuration Protocol，动态主机配置协议)，为网络中的设备提供动态 IP 地址信息，包括 IP 地址、网关、DNS 等。
