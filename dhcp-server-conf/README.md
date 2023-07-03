@@ -28,5 +28,5 @@
 ### DHCP 原理图解：
 - DHCP 工作流示意：
   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/dhcp-server-conf/dhcp-request-response-demo.png)  
-- DHCP Client 抓包示意：
+- [DHCP Client 抓包](https://github.com/Alberthua-Perl/sc-col/blob/master/dhcp-server-conf/dhcp-client-auto.pcap) 示意：
   ![](https://github.com/Alberthua-Perl/sc-col/blob/master/dhcp-server-conf/wireshark-dhcp-client-pcap.png)  
