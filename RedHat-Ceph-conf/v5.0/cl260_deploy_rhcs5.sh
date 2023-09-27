@@ -77,7 +77,9 @@ cephadm shell ceph status
 ### login admin@clienta to verify cluster admin
 echo -e "\n---> Verify ceph cluster status from admin@clienta..."
 echo -e "---> Waiting ceph cluster \033[1;32mHEALTH_OK\033[0m ..."
-# setup 
+# setup interval to wait ceph cluster to become health,
+# If cluster still report HEALTH_WARN without any other messages, 
+# please wait until HEALTH_OK. 
 sleep 20 &
 PID=$!
 FRAMES="/ | \\ -"
@@ -99,3 +101,4 @@ ssh admin@clienta 'sudo cephadm shell ceph status'
 #   $ ceph config set mgr mgr/cephadm/warn_on_stray_daemons false
 #
 #  Cephadm is used as module for ceph manager.
+
