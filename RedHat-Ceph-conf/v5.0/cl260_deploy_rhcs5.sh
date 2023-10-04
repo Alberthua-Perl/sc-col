@@ -1,9 +1,16 @@
 #!/bin/bash
 #
 # Run script on serverc.lab.example.com in CL260 RHCS5
-# course environment. In this scenario, we use cephadm 
-# and ceph command to complete deploy.
-# modified by hualongfeiyyy@163.com
+# course environment.
+# Modified by hualongfeiyyy@163.com
+# 
+# Method to deploy Ceph Storage Cluster:
+#   - use `cephadm bootstrap' boot ONE node(mon) and use ceph service specification file
+#			to deploy cluster
+#   - use `cephadm bootstrap' boot ONE node(mod), `ceph orch host add', `ceph orch host apply',
+#     `ceph orch daemon add osd', `ceph orch host add label' to deploy cluster
+#
+# In this scenario, we use SECOND method to deploy RHCS5.
 
 ### verify deploy node
 echo "---> Verify deploy node if or not serverc..."
@@ -59,9 +66,10 @@ ceph orch apply mgr --placement="serverc.lab.example.com serverd.lab.example.com
 ### setup ceph osds
 echo -e "\n---> Deploy all ceph osds..."
 for i in {c..e}; do
-  ceph orch daemon add osd server${i}.lab.example.com:/dev/vdb
-  ceph orch daemon add osd server${i}.lab.example.com:/dev/vdc
-  ceph orch daemon add osd server${i}.lab.example.com:/dev/vdd
+  echo " --> Start add OSDs on server${i}..."
+  ceph orch daemon add osd server${i}.lab.example.com:/dev/vdb &>/dev/null
+  ceph orch daemon add osd server${i}.lab.example.com:/dev/vdc &>/dev/null
+  ceph orch daemon add osd server${i}.lab.example.com:/dev/vdd &>/dev/null
   sleep 5
 done
 
@@ -80,16 +88,15 @@ echo -e "---> Waiting ceph cluster \033[1;32mHEALTH_OK\033[0m ..."
 # setup interval to wait ceph cluster to become health,
 # If cluster still report HEALTH_WARN without any other messages, 
 # please wait until HEALTH_OK. 
-sleep 20 &
+sleep 30 &
 PID=$!
 FRAMES="/ | \\ -"
 while [[ -d /proc/$PID ]]; do
-	for FRAME in $FRAMES; do
-  	printf "\r$FRAME Waiting..."
-		sleep 0.5
-	done
-done
-printf "\n"
+  for FRAME in $FRAMES; do
+    printf "\r%s Waiting..." "$FRAME"  # Do NOT use variables in printf command
+    sleep 0.5
+  done
+done; printf "\n"
 # use previous while loop under bash NOT zsh
 ssh admin@clienta 'sudo cephadm shell ceph status'
 
