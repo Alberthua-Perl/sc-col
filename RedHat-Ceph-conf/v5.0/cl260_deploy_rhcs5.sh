@@ -1,14 +1,18 @@
 #!/bin/bash
 #
-# Run script on serverc.lab.example.com in CL260 RHCS5
-# course environment.
+# Run script on serverc.lab.example.com in CL260 RHCS5 course environment.
 # Modified by hualongfeiyyy@163.com
 # 
 # Method to deploy Ceph Storage Cluster:
-#   - use `cephadm bootstrap' boot ONE node(mon) and use ceph service specification file
-#			to deploy cluster
-#   - use `cephadm bootstrap' boot ONE node(mod), `ceph orch host add', `ceph orch host apply',
-#     `ceph orch daemon add osd', `ceph orch host add label' to deploy cluster
+#   - service specification:
+#       - cephadm bootstrap to boot ONE node(mon)
+#       - ceph service specification file
+#   - placement specification:
+#       - cephadm bootstrap to boot ONE node(mon)
+#       - ceph orch host add
+#       - ceph orch host apply
+#       - ceph orch daemon add osd
+#       - ceph orch host add label
 #
 # In this scenario, we use SECOND method to deploy RHCS5.
 
@@ -55,12 +59,12 @@ ceph orch host add serverd.lab.example.com
 ceph orch host add servere.lab.example.com
 ceph orch host add clienta.lab.example.com
 
-### setup ceph monitor nodes
-echo -e "\n---> Deploy all ceph monitor nodes..."
+### setup ceph monitor service on nodes
+echo -e "\n---> Deploy all ceph monitor service on nodes..."
 ceph orch apply mon --placement="serverc.lab.example.com serverd.lab.example.com servere.lab.example.com"
 
-### setup ceph manager nodes
-echo -e "\n---> Deploy all ceph manager nodes..."
+### setup ceph manager service on nodes
+echo -e "\n---> Deploy all ceph manager service on nodes..."
 ceph orch apply mgr --placement="serverc.lab.example.com serverd.lab.example.com servere.lab.example.com"
 
 ### setup ceph osds
