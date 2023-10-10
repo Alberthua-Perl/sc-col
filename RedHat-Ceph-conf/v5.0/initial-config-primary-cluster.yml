@@ -1,0 +1,50 @@
+# customized service specification file used by 
+# cephadm bootstrap --apply-spec option
+service_type: host
+addr: 172.25.250.10
+hostname: clienta.lab.example.com
+---
+service_type: host
+addr: 172.25.250.12
+hostname: serverc.lab.example.com
+---
+service_type: host
+addr: 172.25.250.13
+hostname: serverd.lab.example.com
+---
+service_type: host
+addr: 172.25.250.14
+hostname: servere.lab.example.com
+---
+service_type: mon
+placement:
+  hosts:
+    - clienta.lab.example.com
+    - serverc.lab.example.com
+    - serverd.lab.example.com
+    - servere.lab.example.com
+---
+service_type: rgw
+service_id: realm.zone
+placement:
+  hosts:
+    - serverc.lab.example.com
+    - serverd.lab.example.com
+---
+service_type: mgr
+placement:
+  hosts:
+    - clienta.lab.example.com
+    - serverc.lab.example.com
+    - serverd.lab.example.com
+    - servere.lab.example.com
+---
+service_type: osd
+service_id: default_drive_group
+placement:
+  host_pattern: 'server*'
+data_devices:
+  paths:
+    - /dev/vdb
+    - /dev/vdc
+    - /dev/vdd

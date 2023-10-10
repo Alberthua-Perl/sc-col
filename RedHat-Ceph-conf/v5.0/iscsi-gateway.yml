@@ -1,0 +1,14 @@
+service_type: iscsi
+service_id: default_iscsi_driver
+service_name: iscsi.default_iscsi_driver
+placement:
+  hosts:
+    - serverc.lab.example.com
+    - servere.lab.example.com
+spec:
+  pool: iscsipool1
+  trusted_ip_list: "172.25.250.12,172.25.250.14"
+  api_port: 5000
+  api_secure: false
+  api_user: admin
+  api_password: redhat
