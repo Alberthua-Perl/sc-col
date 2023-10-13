@@ -13,6 +13,7 @@
 #     5. remove rados-gateways
 #     6. deploy new iscsi-gateways
 #     7. remove iscsi-gateways
+#     8. setup public and cluster network
 #
 #   In this scenario, we use all two methods to deploy RHCS5.
 
@@ -233,6 +234,19 @@ function client_verify {
   #  Cephadm is used as module for ceph manager.
 }
 
+### setup public and cluster network
+function setup_net {
+  echo -e "\n\t${START}---> Setup public and cluster network...${END}"
+  ceph config set osd public_network 172.25.250.0/24
+  MON_PUBLIC=$(ceph config get mon public_network)
+  OSD_PUBLIC=$(ceph config get osd public_network)
+  OSD_CLUSTER=$(ceph config get osd cluster_network)
+  echo -e "\n\t${START}Current ceph storage cluster network${END}"
+  echo -e "\n\tmon public network: ${MON_PUBLIC}"
+  echo -e "\tosd public network: ${OSD_PUBLIC}"
+  echo -e "\tosd cluster network: ${OSD_CLUSTER}"
+}
+
 ### usage to add monitor nodes
 function u_add_mon {
   echo -e "\n\t${START}Usage to add monitor nodes${END}"
@@ -260,6 +274,7 @@ function menu {
   echo -e "\t5.  Remove rados-gateways"
   echo -e "\t6.  Deploy new iscsi-gateways"
   echo -e "\t7.  Remove iscsi-gateways"
+  echo -e "\t8.  Setup public and cluster network"
   echo -e "\t0.  Exit program\n\n"
   echo -en "\t\tEnter option: "
   read -n 1 option
@@ -309,6 +324,10 @@ do
    7)
      set_var
      remove_iscsigw
+     ;;
+   8)
+     set_var
+     setup_net
      ;;
    *)
      clear
