@@ -5,17 +5,18 @@
 #
 #   Script applies following functions:
 #     1. deploy ceph storage cluster through two methods:
-#        1) use service specification file -- advanced method
+#        1) use service specification file -- ADVANCED method
 #        2) use placement specification command -- NOT apply some configures
-#     2. method to add monitor nodes
-#     3. method to remove monitor nodes
+#     2. usage to add monitor nodes
+#     3. usage to remove monitor nodes
 #     4. deploy new rados-gateways
-#     5. deploy new iscsi-gateways
-#     6. remove iscsi-gateways
+#     5. remove rados-gateways
+#     6. deploy new iscsi-gateways
+#     7. remove iscsi-gateways
 #
-#   In this scenario, we use SECOND method to deploy RHCS5.
+#   In this scenario, we use all two methods to deploy RHCS5.
 
-### set variables
+### set global variables
 function set_var {
   export START="\033[1;37m"
   export END="\033[0m"
@@ -23,7 +24,7 @@ function set_var {
 
 ### set dynamic event waiting
 function event_wait {
-  sleep $second &
+  sleep ${SECOND} &
   PID=$!
   FRAMES="/ | \\ -"
   while [[ -d /proc/$PID ]]; do
@@ -37,7 +38,7 @@ function event_wait {
 
 ### destroy pre-build ceph cluster
 function detroy_cluster {
-  echo -e "\n${START}---> Destroy prebuild ceph cluster...${END}"
+  echo -e "\n${START}---> Destroy pre-build ceph cluster...${END}"
   ssh student@workstation 'lab start deploy-deploy'
 }
 
@@ -71,9 +72,10 @@ EOF
 }
 
 ### bootstrap ceph cluster through customized registry
-function bootstrap_rhcs {
-  echo -e "\n${START}---> Bootstrap ceph cluster...${END}"
-  cephadm bootstrap --mon-ip 172.25.250.12 \
+function bootstrap_mon {
+  echo -e "\n${START}---> Bootstrap first ceph mon node...${END}"
+  cephadm bootstrap \
+  --mon-ip 172.25.250.12 \
   --cluster-network 172.25.249.0/24 \
   --initial-dashboard-password redhat \
   --dashboard-password-noupdate \
@@ -89,6 +91,8 @@ function add_hosts {
   ssh-copy-id -f -i /etc/ceph/ceph.pub root@serverd
   ssh-copy-id -f -i /etc/ceph/ceph.pub root@servere
   ssh-copy-id -f -i /etc/ceph/ceph.pub root@clienta
+  # copy /etc/ceph/ceph.pub to new remote nodes
+  # If /etc/ceph/ceph.pub not existed, use `ceph cephadm get-pub-key > ./ceph.pub' to generate it.
   ceph orch host add serverd.lab.example.com
   ceph orch host add servere.lab.example.com
   ceph orch host add clienta.lab.example.com
@@ -111,14 +115,14 @@ function apply_mgr {
 ### setup rados gateway instances on nodes
 function apply_rgw {
   echo -e "\n${START}---> Deploy rados gateway instances on nodes...${END}"
-  RGW_SPEC_FILE=/root/rgw-service.yml
+  RGW_SPEC_FILE=/root/initial-rgw-service.yml
   cat > ${RGW_SPEC_FILE} <<EOF
 service_type: rgw
 service_id: myrealm.myzone
 service_name: rgw.myrealm.myzone
 placement:
   count: 4
-  # each host including two instances
+  # each node including two instances
   hosts:
     - serverc.lab.example.com
     - serverd.lab.example.com
@@ -126,22 +130,33 @@ spec:
   rgw_frontend_port: 8080
 EOF
   ceph orch apply -i ${RGW_SPEC_FILE}
-  second=20
+  SECOND=20
   event_wait
   echo -e "\n\t${START}Current rados gateway instances${END}\n"
   ceph orch ps --daemon-type rgw  
 }
 
+### remove rados gateway instances
+function remove_rgw {
+  echo -e "\n${START}---> Remove rados gateway instances...${END}"
+  ceph orch rm rgw.myrealm.myzone
+  sleep 5
+  ceph orch ps --daemon-type rgw
+}
+
 ### setup iscsi gateway instances on nodes
 function apply_iscsigw {
   echo -e "\n${START}---> Deploy iscsi gateway instances on nodes...${END}"
-  echo -e " ${START}--> Allow 3260/tcp and 5000/tcp ports...${END}"
-  firewall-cmd --permanent --add-port={3260/tcp,5000/tcp} && firewall-cmd --reload
-  ssh root@servere 'firewall-cmd --permanent --add-port={3260/tcp,5000/tcp} && firewall-cmd --reload'
+  echo -e " ${START}--> Allow 3260/tcp and 5000/tcp ports on serverc servere...${END}"
+  firewall-cmd --zone=public --permanent --add-port={3260/tcp,5000/tcp} && firewall-cmd --reload
+  ssh root@servere 'firewall-cmd --zone=public --permanent --add-port={3260/tcp,5000/tcp} && firewall-cmd --reload'
   echo -e " ${START}--> Create iscsigw-pool pool...${END}"
   ceph osd pool create iscsigw-pool 32 32
   ceph osd pool application enable iscsigw-pool rbd
-  ISCSIGW_SPEC_FILE=/root/iscsi-gateway-service.yml
+  # Important:
+  #  If not creating pool, ceph orchestrator reports ERROR
+  #  'orchestrator._interface.OrchestratorError: Cannot find pool "iscsigw-pool" for service iscsi.my_iscsi_driver'
+  ISCSIGW_SPEC_FILE=/root/initial-iscsi-gateway-service.yml
   cat > ${ISCSIGW_SPEC_FILE} <<EOF
 service_type: iscsi
 service_id: my_iscsi_driver
@@ -150,7 +165,7 @@ placement:
   hosts:
     - serverc.lab.example.com
     - servere.lab.example.com
-    # allow 3260/tcp and 5000/tcp port on hosts
+    # allow 3260/tcp and 5000/tcp port on nodes
 spec:
   pool: iscsigw-pool
   trusted_ip_list: "172.25.250.12,172.25.250.14"
@@ -181,6 +196,7 @@ function setup_osd {
     ceph orch daemon add osd server${i}.lab.example.com:/dev/vdb
     ceph orch daemon add osd server${i}.lab.example.com:/dev/vdc
     ceph orch daemon add osd server${i}.lab.example.com:/dev/vdd
+	# raw data, rocksdb and wal journal on the same osd
     sleep 3
   done
 }
@@ -203,7 +219,7 @@ function client_verify {
   # setup interval to wait ceph cluster to become health,
   # If cluster still report HEALTH_WARN without any other messages, 
   # please wait until HEALTH_OK. 
-  second=30
+  SECOND=30
   event_wait
   ssh admin@clienta 'sudo cephadm shell -- ceph status'
   
@@ -217,32 +233,34 @@ function client_verify {
   #  Cephadm is used as module for ceph manager.
 }
 
-### method to add monitor nodes
+### usage to add monitor nodes
 function u_add_mon {
-  echo -e "\n\t${START}Method to add monitor nodes${END}"
+  echo -e "\n\t${START}Usage to add monitor nodes${END}"
   echo -e "\n\t\$ ceph orch host add MON_HOST_NAME"
   echo -e "\t\$ ceph orch apply mon --placement=\"NODE1 NODE2 NODE3 MON_HOST_NAME\""
 }
 
-### method to remove monitor nodes
+### usage to remove monitor nodes
 function u_remove_mon {
-  echo -e "\n\t${START}Method to remove monitor nodes${END}"
+  echo -e "\n\t${START}Usage to remove monitor nodes${END}"
   echo -e "\n\t\$ ceph orch apply mon --placement=\"NODE1 NODE2 NODE3\""
   echo -e "\n\tPlease DO NOT use node name which will be removed in --placement option..."
 }
 
-### menu function to display how to use this tool
+### menu function to display how to use this navigator
 function menu {
   clear
   echo
-  echo -e "\t\t  CL260 RHCS5 Manage Menu\n"
-  echo -e "\t1.\tDeploy regular ceph storage cluster"
-  echo -e "\t2.\tMethod to add monitor nodes"
-  echo -e "\t3.\tMethod to remove monitor nodes"
-  echo -e "\t4.\tDeploy new rados-gateways"
-  echo -e "\t5.\tDeploy new iscsi-gateways"
-  echo -e "\t6.\tRemove iscsi-gateways"
-  echo -e "\t0.\tExit program\n\n"
+  set_var
+  echo -e "\t\t  ${START}CL260 RHCS5 Navigator Menu${END}\n"
+  echo -e "\t1.  Deploy regular ceph storage cluster"
+  echo -e "\t2.  Usage to add monitor nodes"
+  echo -e "\t3.  Usage to remove monitor nodes"
+  echo -e "\t4.  Deploy new rados-gateways"
+  echo -e "\t5.  Remove rados-gateways"
+  echo -e "\t6.  Deploy new iscsi-gateways"
+  echo -e "\t7.  Remove iscsi-gateways"
+  echo -e "\t0.  Exit program\n\n"
   echo -en "\t\tEnter option: "
   read -n 1 option
   echo
@@ -260,7 +278,7 @@ do
      detroy_cluster
      verify_node 
      install_package
-     bootstrap_rhcs
+     bootstrap_mon
      add_hosts
      apply_mon
      apply_mgr
@@ -282,9 +300,13 @@ do
      ;;
    5)
      set_var
+	 remove_rgw
+	 ;;
+   6)
+     set_var
      apply_iscsigw
      ;;
-   6)
+   7)
      set_var
      remove_iscsigw
      ;;
@@ -297,4 +319,3 @@ do
   read -n 1 line
 done
 clear
-
