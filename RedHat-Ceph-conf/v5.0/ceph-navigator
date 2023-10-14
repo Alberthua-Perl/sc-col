@@ -315,7 +315,7 @@ do
      ;;
    5)
      set_var
-	 remove_rgw
+	   remove_rgw
 	 ;;
    6)
      set_var
