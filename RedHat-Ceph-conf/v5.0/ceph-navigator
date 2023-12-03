@@ -258,7 +258,7 @@ function u_add_mon {
 function u_remove_mon {
   echo -e "\n\t${START}Usage to remove monitor nodes${END}"
   echo -e "\n\t\$ ceph orch apply mon --placement=\"NODE1 NODE2 NODE3\""
-  echo -e "\n\tPlease DO NOT use node name which will be removed in --placement option..."
+  echo -e "\n\tPlease *DO NOT* use node name which will be removed in --placement option..."
 }
 
 ### menu function to display how to use this navigator
@@ -267,15 +267,15 @@ function menu {
   echo
   set_var
   echo -e "\t\t  ${START}CL260 RHCS5 Navigator Menu${END}\n"
-  echo -e "\t1.  Deploy regular ceph storage cluster"
-  echo -e "\t2.  Usage to add monitor nodes"
-  echo -e "\t3.  Usage to remove monitor nodes"
-  echo -e "\t4.  Deploy new rados-gateways"
-  echo -e "\t5.  Remove rados-gateways"
-  echo -e "\t6.  Deploy new iscsi-gateways"
-  echo -e "\t7.  Remove iscsi-gateways"
-  echo -e "\t8.  Setup public and cluster network"
-  echo -e "\t0.  Exit program\n\n"
+  echo -e "\t[1]  Deploy regular ceph storage cluster"
+  echo -e "\t[2]  Usage to add monitor nodes"
+  echo -e "\t[3]  Usage to remove monitor nodes"
+  echo -e "\t[4]  Deploy new rados-gateways"
+  echo -e "\t[5]  Remove rados-gateways"
+  echo -e "\t[6]  Deploy new iscsi-gateways"
+  echo -e "\t[7]  Remove iscsi-gateways"
+  echo -e "\t[8]  Setup public and cluster network"
+  echo -e "\t[0]  Exit program\n\n"
   echo -en "\t\tEnter option: "
   read -n 1 option
   echo
