@@ -4,6 +4,7 @@
 # modified by lhua@redhat.com on 2024-05-14
 
 echo -e "\n---> Prepare deploy environment..."
+yum install -y sshpass
 sshpass -p student ssh student@workstation "lab start deploy-deploy"
 yum install -y cephadm-ansible
 
@@ -68,8 +69,8 @@ placement:
 data_devices:
   paths:
     - /dev/vdb
-#    - /dev/vdc
-#    - /dev/vdd
+    - /dev/vdc
+    - /dev/vdd
 
 # Note:
 #  Because guided exercise on p49 expend ceph cluster storage, when using lab
