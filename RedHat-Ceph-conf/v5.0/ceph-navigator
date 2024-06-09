@@ -177,7 +177,7 @@ spec:
 EOF
   ceph orch apply -i ${ISCSIGW_SPEC_FILE}
   sleep 10
-  echo -e "\n\t${START}Current rados gateway instances${END}\n"
+  echo -e "\n\t${START}Current iscsi-gateway instances${END}\n"
   ceph orch ps --daemon-type iscsi
 }
 
