@@ -1,0 +1,88 @@
+[OpenSUSE-Leap_15.6-OSS]
+name=OpenSUSE Leap 15.6 OSS Repo
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/distribution/leap/15.6/repo/oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Non-OSS]
+name=OpenSUSE Leap 15.6 Non OSS
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/distribution/leap/15.6/repo/non-oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Update]
+name=OpenSUSE Leap 15.6 Update
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/update/leap/15.6/oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Update-Non-OSS]
+name=OpenSUSE Leap 15.6 Update Non OSS
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/update/leap/15.6/non-oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Src-OSS]
+name=OpenSUSE Leap 15.6 Src OSS
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/source/distribution/leap/15.6/repo/oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Src-Non-OSS]
+name=OpenSUSE Leap 15.6 Src Non OSS
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/source/distribution/leap/15.6/repo/non-oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Debug]
+name=OpenSUSE Leap 15.6 Debug
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/debug/distribution/leap/15.6/repo/oss/
+#baseurl=http://download.opensuse.org/debug/update/leap/15.6/oss/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Backports-Update]
+name=OpenSUSE Leap 15.6 Backports Update
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/update/leap/15.6/backports/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-Backports-Debug-Update]
+name=OpenSUSE Leap 15.6 Backports Debug-Update
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/update/leap/15.6/backports_debug/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-SLE-Update]
+name=OpenSUSE Leap 15.6 SLE Update
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/update/leap/15.6/sle/
+type=rpm-md
+keeppackages=0
+
+[OpenSUSE-Leap_15.6-SLE-Debug-Update]
+name=OpenSUSE Leap 15.6 SLE Debug-Update
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/debug/update/leap/15.6/sle/
+type=rpm-md
+keeppackages=0
