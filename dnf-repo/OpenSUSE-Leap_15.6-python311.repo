@@ -1,0 +1,5 @@
+[OpenSUSE-Leap_15.6-python311]
+name=OpenSUSE Leap 15.6 of Python311
+enabled=1
+autorefresh=1
+baseurl=https://download.opensuse.org/repositories/devel:/languages:/python/15.6/
