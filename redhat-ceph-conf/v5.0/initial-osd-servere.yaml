@@ -1,0 +1,11 @@
+service_type: osd
+service_id: servere_drive_group
+placement:
+  #host_pattern: 'server*'
+  hosts:
+    - servere.lab.example.com
+data_devices:
+  paths:
+    - /dev/vdb
+    - /dev/vdc
+    - /dev/vdd
