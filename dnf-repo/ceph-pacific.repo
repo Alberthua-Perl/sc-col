@@ -1,0 +1,8 @@
+[ceph-pacific]
+name=Ceph Pacific packages
+baseurl=http://mirrors.163.com/ceph/rpm-pacific/el8/x86_64/
+enabled=1
+gpgcheck=1
+priority=1
+type=rpm-md
+gpgkey=http://mirrors.163.com/ceph/keys/release.asc
