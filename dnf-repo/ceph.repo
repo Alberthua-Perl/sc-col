@@ -1,8 +1,0 @@
-[ceph-noarch]
-name=Ceph noarch packages
-baseurl=http://mirrors.163.com/ceph/rpm-nautilus/el7/noarch
-enabled=1
-gpgcheck=1
-priority=1
-type=rpm-md
-gpgkey=http://mirrors.163.com/ceph/keys/release.asc

@@ -65,7 +65,11 @@ placement:
 service_type: osd
 service_id: default_drive_group
 placement:
-  host_pattern: 'server*'
+  #host_pattern: 'server*'
+  hosts:
+    - serverc.lab.example.com
+    - serverd.lab.example.com
+    # Note: Don't create osd on servere.lab.example.com. Use osd spec file to create on it.
 data_devices:
   paths:
     - /dev/vdb
@@ -91,3 +95,11 @@ echo -e "\n---> Post-deploy operations..."
 ceph orch host label add clienta.lab.example.com _admin
 ceph orch host ls
 scp /etc/ceph/{ceph.conf,ceph.client.admin.keyring} root@clienta:/etc/ceph
+
+echo -e "\n---> [WARNING] Please add OSDs on servere...\n"
+echo -e "     Use initial-osd-servere.yaml to deploy osd on servere by following command: \n"
+echo -e "     $ ceph orch apply -i ./initial-osd-servere.yaml\n"
+echo "     If you don't deploy osd on servere, pg will be undersized. Because number"
+echo "     of pg is great than number of osd. So you should deploy osd on servere to"
+echo -e "     keep cluster healthy.\n"
+
