@@ -70,12 +70,12 @@ class LibvirtBmc(bmc.Bmc):
         conn, domain = self._get_conn_domain()
         if domain is None:
           return None
-	xmldesc = etree.fromstring(domain.XMLDesc())
-	bootdev = xmldesc.xpath('//domain/os/boot')[0].get('dev')
-	if bootdev in ipmicommand.boot_devices.keys():
-	    return ipmicommand.boot_devices[bootdev]
-	else:
-	    return None
+    xmldesc = etree.fromstring(domain.XMLDesc())
+    bootdev = xmldesc.xpath('//domain/os/boot')[0].get('dev')
+    if bootdev in ipmicommand.boot_devices.keys():
+        return ipmicommand.boot_devices[bootdev]
+    else:
+        return None
 
     def get_system_boot_options(self, request, session):
         sys.stderr.write("%s: get boot options\n" % self.name)
