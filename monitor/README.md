@@ -59,6 +59,12 @@
    $ sh ./10-mon_sys_install.sh
    ```
 
+   Prometheus 与 Alertmanager 部署完成后访问测试：
+
+   <img src="images/prometheus-dashboard.jpg" style="width:80%">
+
+   <img src="images/alertmanager-dashboard.jpg" style="width:80%">
+
 5. 可选：在单独的节点上安装 node_exporter 被 Prometheus 服务端监控
 
    ```bash

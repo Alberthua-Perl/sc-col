@@ -22,4 +22,3 @@ nmcli connection up "System bridge0"
 # Note:
 # 	$ nmcli -f NAME,UUID,TYPE,DEVICE,FILENAME connection show
 # 	# verify nm-connection config file location	
-
