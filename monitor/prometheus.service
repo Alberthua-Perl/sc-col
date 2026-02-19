@@ -1,0 +1,23 @@
+[Unit]
+Description=Prometheus Daemon Service
+After=network.target
+
+[Service]
+Type=simple
+Environment="GOMAXPROCS=4"
+User=prometheus
+Group=prometheus
+ExecReload=/bin/kill -HUP 
+ExecStart=/usr/local/prometheus/prometheus --config.file=/usr/local/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/prometheus/data --web.console.libraries=/usr/local/prometheus/console_libraries --web.console.templates=/usr/local/prometheus/consoles --web.listen-address=0.0.0.0:9090 --web.read-timeout=5m --web.max-connections=10 --query.max-concurrency=20 --query.timeout=2m --web.enable-lifecycle
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+NoNewPrivileges=true
+LimitNOFILE=infinity
+ReadWriteDirectories=/usr/local/prometheus/data
+ProtectSystem=full
+SyslogIdentifier=prometheus
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

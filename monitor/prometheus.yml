@@ -1,0 +1,59 @@
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# -----------------------------------------------------------
+#Alertmanager 是独立的组件，告警信息是通过 Prometheus 服务端推送过来的，所以需要在服务端
+#Prometheus 中关联 Alertmanager 组件并添加告警规则文件。
+#
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 192.168.110.122:9093    #CHANGEME
+            #Alertmanager 主机的 IPv4 地址与端口，此处将 Prometheus 与 Alertmanager 部署在同一主机上，也可分离独立部署。
+# -----------------------------------------------------------
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - /usr/local/prometheus/rules/*.yml
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+  #指定 Prometheus 规则文件存储路径
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+       # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "prometheus"
+
+  # -----------------------------------------------------------
+  #新增 node_exporter 代理服务
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["192.168.110.122:9100"]    #CHANGEME
+      #被监控主机的 IP 地址列表
+
+  #说明：
+  #  1. 通过 file_sd_configs 基于文件的服务发现，动态添加节点信息。
+  #  2. 这种方式只要第一次配置的时候重启 Prometheus，后面在 dev_node.yml 文件中新增或删除节点是即时生效的，不需要重启 Prometheus。
+  - job_name: "node_service_discovery"
+    file_sd_configs:
+      - files:
+          #- targets/*.yml                       #相对路径：加载当前目录下 targets 目录里面的所有 yml 文件
+          - /usr/local/prometheus/targets/*.yml  #绝对路径
+        refresh_interval: 15s  #设置刷新时间间隔
+  # -----------------------------------------------------------
+    

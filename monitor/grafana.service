@@ -1,0 +1,13 @@
+[Unit]
+Description=Grafana server
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/grafana/bin/grafana-server -homepath=/usr/local/grafana
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

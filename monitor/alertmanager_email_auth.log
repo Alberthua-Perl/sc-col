@@ -1,0 +1,5 @@
+# 163 邮箱应使用授权码认证登陆，但使用了邮箱密码而导致的认证失败。
+Feb 15 21:00:24 mon-eda.lab.example.com alertmanager[1436]: time=2026-02-15T21:00:24.464+08:00 level=WARN source=notify.go:927 msg="Notify attempt failed, will retry later" component=dispatcher receiver=email integration=email[0] aggrGroup="{}:{alertname=\"实例存活告警\"}" attempts=1 err="*email.loginAuth auth: 535 Error: authentication failed"
+
+# 163 邮箱 SMTP 服务封禁 IP，等待 24 小时后再尝试。
+Feb 16 00:04:59 mon-eda.lab.example.com alertmanager[14187]: time=2026-02-16T00:04:59.949+08:00 level=WARN source=notify.go:927 msg="Notify attempt failed, will retry later" component=dispatcher receiver=email integration=email[0] aggrGroup="{}:{alertname=\"实例存活告警\"}" attempts=2 err="create SMTP client: 554 IP is rejected, smtp auth error limit exceed,163 gzga-smtp-mtada-g1-2,_____wA3tiir7pFpmQavLA--.29194S0 1771171499"

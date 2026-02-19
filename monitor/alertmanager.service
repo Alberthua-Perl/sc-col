@@ -1,0 +1,13 @@
+[Unit]
+Description=alertmanager module
+Documentation=https://github.com/prometheus/alertmanager
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/alertmanager/alertmanager --config.file=/usr/local/alertmanager/alertmanager.yml --storage.path=/usr/local/alertmanager/data --web.listen-address=:9093 --data.retention=120h
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

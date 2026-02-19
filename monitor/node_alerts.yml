@@ -1,0 +1,39 @@
+# 以下告警规则可扩充
+groups:
+  - name: 实例存活告警规则
+    rules:
+      - alert: 实例存活告警  # 告警规则的名称（alertname）
+        expr: up == 0      # expr 是计算公式，up 指标可以获取到当前所有运行的 Exporter 实例以及其状态，即告警阈值为 up==0。
+        for: 30s
+        # for 语句会使 Prometheus 服务等待指定的时间, 然后执行查询表达式。
+        # for 表示告警持续的时长，若持续时长小于该时间就不发给 alertmanager，大于该时间再发。
+        # for 的值不要小于 prometheus 中的 scrape_interval，例如 scrape_interval 为 30s，for 为 15s，
+        # 如果触发告警规则，则再经过 for 时长后也一定会告警，这是因为最新的度量指标还没有拉取，在 15s 时仍会用原来值进行计算。
+        # 另外，要注意的是只有在第一次触发告警时才会等待 (for) 时长。
+        labels:  # labels 语句允许指定额外的标签列表，把它们附加在告警上。
+          severity: Disaster
+        annotations:  # annotations 语句指定了另一组标签，它们不被当做告警实例的身份标识，它们经常用于存储一些额外的信息，用于报警信息的展示之类。
+          summary: "节点失联"
+          description: "节点断联已超过1分钟！"
+  - name: 内存告警规则
+    rules:
+      - alert: "内存使用率告警"
+        expr: (node_memory_MemTotal_bytes - (node_memory_MemFree_bytes+node_memory_Buffers_bytes+node_memory_Cached_bytes )) / node_memory_MemTotal_bytes * 100 > 75
+        # 告警阈值为当内存使用率大于 75%
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务器内存报警"
+          description: "内存资源利用率大于75%！(当前值: {{ $value }}%)"
+  - name: 磁盘报警规则
+    rules:
+      - alert: 磁盘使用率告警
+        expr: (node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes * 100 > 80
+        # 告警阈值为某个挂载点使用大于 80%
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务器磁盘报警"
+          description: "服务器磁盘设备使用超过80%！(挂载点: {{ $labels.mountpoint }} 当前值: {{ $value }}%)"
