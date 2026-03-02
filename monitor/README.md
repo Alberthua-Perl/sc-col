@@ -1,4 +1,4 @@
-# 一键部署二进制 Prometheus+Alertmanager+Granafa 监控平台
+# 📊 一键部署二进制 Prometheus+Alertmanager+Granafa 监控平台
 
 1. 项目目录结构：
 
