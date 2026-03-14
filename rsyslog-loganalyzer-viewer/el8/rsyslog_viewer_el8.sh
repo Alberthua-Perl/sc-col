@@ -181,44 +181,46 @@ podman ps --format="table {{.Names}} {{.Ports}} {{.Status}}"; echo ""
 
 echo "---> Deploy successfully!"
 
-  # Note:
-  #   As previous mention, all container deployed on the same node.
-  #   If you don't use podman container, you can also use rpm packages
-  #   to deploy services. 
-  #   Just like as followings:
-  # 
-  # yum install -y httpd php php-mysqlnd php-gd
-  # # php-mysql in CentOS 7.x and php-mysqlnd in CentOS 8.x
-  # echo "--> Deploy loganalyzer(php) ..."
-  # mkdir -pv /web/loganalyzer/
-  # tar -zxf loganalyzer-4.1.11.tar.gz
-  # cp -r loganalyzer-4.1.11/src/* /web/loganalyzer/
-  # cp -r loganalyzer-4.1.11/contrib/*.sh /web/loganalyzer/
-  # touch /web/loganalyzer/config.php && chmod 666 /web/loganalyzer/config.php
-  # semanage fcontext -a -t httpd_sys_content_t '/web(/.*)?'
-  # echo "--> Current selinux file context ..."
-  # restorecon -Rv /web > /dev/null && ls -ldZ /web
-  # chcon -t httpd_sys_rw_content_t /web/loganalyzer/config.php && \
-  # 	ls -lZ /web/loganalyzer/config.php
+:<<eof
+Note:
+  As previous mention, all container deployed on the same node.
+  If you don't use podman container, you can also use rpm packages
+  to deploy services. 
+  Just like as followings:
+
+yum install -y httpd php php-mysqlnd php-gd
+# php-mysql in CentOS 7.x and php-mysqlnd in CentOS 8.x
+echo "--> Deploy loganalyzer(php) ..."
+mkdir -pv /web/loganalyzer/
+tar -zxf loganalyzer-4.1.11.tar.gz
+cp -r loganalyzer-4.1.11/src/* /web/loganalyzer/
+cp -r loganalyzer-4.1.11/contrib/*.sh /web/loganalyzer/
+touch /web/loganalyzer/config.php && chmod 666 /web/loganalyzer/config.php
+semanage fcontext -a -t httpd_sys_content_t '/web(/.*)?'
+echo "--> Current selinux file context ..."
+restorecon -Rv /web > /dev/null && ls -ldZ /web
+chcon -t httpd_sys_rw_content_t /web/loganalyzer/config.php && \
+	ls -lZ /web/loganalyzer/config.php
   ## httpd_sys_rw_content_t file context ensure the file could
   ## be writeable
-  # setsebool -P httpd_can_network_connect on && \
-  # setsebool -P httpd_can_network_connect_db on
+setsebool -P httpd_can_network_connect on && \
+setsebool -P httpd_can_network_connect_db on
   ## set SELinux boolean to allow php connect to mysql
-  # cat > /etc/httpd/conf.d/loganalyzer-viewer.conf <<EOF
-  # Listen 8881
-  # <VirtualHost *:8881>
-  #   ServerName loganalyzer-viewer.lab.example.com
-  #   DocumentRoot /web/loganalyzer
-  #   LogLevel debug
-  #   <Directory /web/loganalyzer>
-  #     DirectoryIndex index.php index.html index.html.var
-  #     AllowOverride None
-  #     Require all granted
-  #   </Directory>
-  # </VirtualHost>
-  # EOF
-  # 
-  # echo "--> Apache httpd server status is ..."
-  # systemctl start httpd.service
-  # systemctl status httpd.service
+cat > /etc/httpd/conf.d/loganalyzer-viewer.conf <<EOF
+Listen 8881
+<VirtualHost *:8881>
+  ServerName loganalyzer-viewer.lab.example.com
+  DocumentRoot /web/loganalyzer
+  LogLevel debug
+  <Directory /web/loganalyzer>
+    DirectoryIndex index.php index.html index.html.var
+    AllowOverride None
+    Require all granted
+  </Directory>
+</VirtualHost>
+EOF
+
+echo "--> Apache httpd server status is ..."
+systemctl start httpd.service
+systemctl status httpd.service
+eof

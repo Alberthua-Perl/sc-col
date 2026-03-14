@@ -4,14 +4,19 @@
 # remote rsyslog server connected with mysql
 # database.
 #
-# Create on 2021-04-05 by hualongfeiyyy@163.com
+# Modified on 2026-03-15 by <hualongfeiyyy@163.com>
+# Usage:
+#   [root@servera ~]# sh ./rsyslog_client_el8.sh
+#   [root@serverb ~]# sh ./rsyslog_client_el8.sh
 #
+
+echo -e "\n>>>>> Start to deploy rsyslog client  <<<<<"
 
 MYSQL_ADDR=172.25.250.11
 # SYSLOG_USER=syslogroot
 # SYSLOG_PASS=syslogpass
 
-echo "---> Deploy rsyslog client"
+echo -e "\n---> Deploy rsyslog client..."
 cp /etc/rsyslog.conf /etc/rsyslog.conf.bak
 
 cat > /etc/rsyslog.conf <<EOF
@@ -35,6 +40,6 @@ local7.*				/var/log/boot.log
 EOF
 
 systemctl restart rsyslog.service
-systemctl status rsyslog.service
-echo "--> Deploy successfully!"
+systemctl status -l --no-pager rsyslog.service
+echo -e "\n---> Deploy successfully!"
 
