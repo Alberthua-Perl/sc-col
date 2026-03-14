@@ -31,7 +31,7 @@
 > 若环境中存在 Red Hat Quay 3.3.0 容器镜像仓库，需将 `mysql-57-rhel7:latest` 上传至该容器镜像仓库中的 `rhscl organization` 中。
 > 将容器镜像上传至 Quay 中，需提前创建相应的 organizaion，否则将上传失败报错！
 > 
-> ![quay-push-error-1](images/images/quay-push-error-1.JPG)
+> ![quay-push-error-1](images/quay-push-error-1.JPG)
 >
 > ![quay-push-error-2](images/quay-push-error-2.JPG)
 >
