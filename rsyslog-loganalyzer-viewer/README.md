@@ -20,12 +20,20 @@
 ## LogAnalyzer 与 MySQL 的容器部署要点
 
 - 部署用 Shell 脚本参考该 [链接](https://github.com/Alberthua-Perl/sc-col/blob/master/rsyslog-loganalyzer-viewer/el8/rsyslog_viewer_el8-new.sh)。
-- 脚本运行方式：
+- 部署 loganalyzer 与 mysql 容器：
 
   ```bash
+  #示例：serverb 上执行
   $ sudo sh ./rsyslog_viewer_el8-new.sh
   # 此脚本中包含相关用户名、密码与 IP 地址，请根据实际情况更改调整。
   ```
+  
+- 添加 rsyslog 客户端：
+
+  ```bash
+  #示例：servera 上执行
+  $ sudo sh ./rsyslog_client_el8.sh
+  ``` 
 
 > 说明： 
 > 若环境中存在 Red Hat Quay 3.3.0 容器镜像仓库，需将 `mysql-57-rhel7:latest` 上传至该容器镜像仓库中的 `rhscl organization` 中。
