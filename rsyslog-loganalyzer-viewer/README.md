@@ -80,7 +80,7 @@
   - loganalyzer 容器镜像基于 Apache HTTPD server 构建，可参考此 [链接](https://github.com/Alberthua-Perl/sc-col/tree/master/rsyslog-loganalyzer-viewer/loganalyzer-viewer) 进行封装。
   - 由于使用 mysql 的 Red Hat 官方镜像，启动容器时不使用 root 用户运行 mysql 守护进程，而使用 **UID 27** (mysql) 运行，需设置宿主机映射目录的所有者与所属组，不更改将无法运行容器。容器中报错日志如下所示：
     
-    <center><img src="images/mysql-container-run-error.JPG" style="width:80%"></center>
+  <center><img src="images/mysql-container-run-error.JPG" style="width:80%"></center>
 
 ## LogAnalyzer 的常规部署要点
 
